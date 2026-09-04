@@ -1,1 +1,155 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BLOCK 105 Converter</title><style>body{margin:0;font-family:Arial;background:#eee}header{background:#080808;color:#fff;text-align:center;padding:30px;border-bottom:7px solid #ffd21f}h1{margin:0;font-size:42px}header p{color:#ffd21f;font-weight:bold;letter-spacing:2px}main{max-width:720px;margin:40px auto;background:#fff;padding:35px;border-radius:12px}h2{text-align:center}.drop{border:3px dashed #aaa;padding:40px;text-align:center;margin:25px 0}button{width:100%;padding:18px;background:#ffd21f;border:0;font-size:20px;font-weight:bold}.note,.flash{padding:15px;background:#f4f4f4;border-left:5px solid #ffd21f}.flash{background:#fff3cd;margin-bottom:15px}</style></head><body><header><h1>THE BLOCK 105 RADIO</h1><p>LIVE365 CUE SHEET CONVERTER</p></header><main>{% with messages=get_flashed_messages() %}{% for message in messages %}<div class="flash">{{message}}</div>{% endfor %}{% endwith %}<h2>Convert Your Completed Cue Sheet</h2><div class="note">Upload the completed BLOCK 105 fillable cue sheet and download a Live365-ready CSV.</div><form method="post" enctype="multipart/form-data"><div class="drop"><strong>SELECT COMPLETED CUE SHEET PDF</strong><br><br><input type="file" name="pdf" accept=".pdf,application/pdf" required></div><button type="submit">CONVERT TO LIVE365 CSV</button></form></main></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLOCK 105 Cue Sheet Converter</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #111;
+            color: white;
+        }
+
+        .header {
+            background: #000;
+            border-bottom: 4px solid #f4c400;
+            padding: 25px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+            color: #f4c400;
+        }
+
+        .header p {
+            margin: 8px 0 0;
+            color: white;
+            font-size: 16px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: #222;
+            border: 2px solid #f4c400;
+            border-radius: 12px;
+            padding: 35px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #f4c400;
+            margin-top: 0;
+        }
+
+        p {
+            line-height: 1.6;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            margin: 25px 0;
+            padding: 15px;
+            background: white;
+            color: black;
+            border-radius: 6px;
+        }
+
+        button {
+            background: #f4c400;
+            color: black;
+            border: none;
+            padding: 15px 35px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #ffd92f;
+        }
+
+        .message {
+            background: #5a1f1f;
+            border: 1px solid #ff7777;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+        }
+
+        .footer {
+            text-align: center;
+            color: #aaa;
+            margin-top: 30px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>THE BLOCK 105 RADIO</h1>
+        <p>Cue Sheet to Live365 CSV Converter</p>
+    </div>
+
+    <div class="container">
+
+        <div class="card">
+
+            <h2>Upload Your Completed Cue Sheet</h2>
+
+            <p>
+                Upload your completed BLOCK 105 RADIO Cue Sheet PDF.
+                The converter will create a Live365-compatible CSV file.
+            </p>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="message">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" enctype="multipart/form-data">
+
+                <input
+                    type="file"
+                    name="pdf"
+                    accept=".pdf"
+                    required
+                >
+
+                <br>
+
+                <button type="submit">
+                    CONVERT TO LIVE365 CSV
+                </button>
+
+            </form>
+
+        </div>
+
+        <div class="footer">
+            THE BLOCK 105 RADIO • Broadcast Compliance Tools
+        </div>
+
+    </div>
+
+</body>
+</html>
