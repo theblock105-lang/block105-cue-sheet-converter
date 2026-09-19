@@ -106,7 +106,44 @@ CONVERT TO LIVE365 CSV
 </button>
 
 </form>
+{% if report %}
+<hr style="margin: 30px 0; border-color: #ffd400;">
 
+<h2>CONVERSION COMPLETE</h2>
+
+<p>
+Original rows: {{ report.original_count }}<br>
+Corrected rows: {{ report.corrected_count }}
+</p>
+
+{% if report.errors %}
+<h3>Errors</h3>
+{% for error in report.errors %}
+<p>{{ error }}</p>
+{% endfor %}
+{% endif %}
+
+{% if report.warnings %}
+<h3>Warnings</h3>
+{% for warning in report.warnings %}
+<p>{{ warning }}</p>
+{% endfor %}
+{% endif %}
+
+{% if report.corrections %}
+<h3>Corrections Made</h3>
+{% for correction in report.corrections %}
+<p>{{ correction.message }}</p>
+{% endfor %}
+{% endif %}
+
+<form method="POST">
+    <input type="hidden" name="action" value="download">
+    <button type="submit">
+        DOWNLOAD LIVE365 CSV
+    </button>
+</form>
+{% endif %}
 </div>
 
 </div>
