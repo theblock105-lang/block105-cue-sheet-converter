@@ -880,12 +880,12 @@ def index():
         )
 
         return render_template(
-           "converter.html"
+          "converter.html",
             report=report
         )
 
     return render_template(
-       "converter.html"
+     "converter.html",
         report=None
     )
 
