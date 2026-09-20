@@ -15,7 +15,7 @@ app.secret_key = os.environ.get("SECRET_KEY", "block105")
 # ---------------------------------------------------------
 
 def clean(value):
-    text = str(value or "")
+  text = str(value or "").encode("latin1", errors="ignore").decode("utf-8", errors="ignore")
 
     # Remove non-printing control characters.
     text = re.sub(r"[\x00-\x1F\x7F]", "", text)
