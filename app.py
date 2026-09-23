@@ -6,6 +6,7 @@ import re
 from flask import Flask, render_template, request, send_file, flash, redirect, url_for, session
 from pypdf import PdfReader
 
+
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "block105")
 
@@ -15,14 +16,8 @@ app.secret_key = os.environ.get("SECRET_KEY", "block105")
 # ---------------------------------------------------------
 
 def clean(value):
-    if isinstance(value, bytes):
-        text = value.decode("latin1", errors="ignore")
-    else:
-        text = str(value or "")
-
-    # Remove non-printing control characters.
+    text = str(value or "")
     text = re.sub(r"[\x00-\x1F\x7F]", "", text)
-
     return text.strip()
 
 
@@ -31,18 +26,6 @@ def clean(value):
 # ---------------------------------------------------------
 
 def parse_timestamp(value):
-    """
-    Accepts:
-        00:04:01
-        4:01
-        0031:42  -> 00:31:42
-        0040:03  -> 00:40:03
-        00;04;01 -> 00:04:01
-        decimal seconds
-
-    Returns milliseconds.
-    """
-
     value = clean(value)
 
     if not value:
@@ -63,8 +46,6 @@ def parse_timestamp(value):
             first = parts[0]
             seconds = float(parts[1])
 
-            # Handles entries such as:
-            # 0031:42 = 31 minutes, 42 seconds
             if first.isdigit() and len(first) > 2:
                 total_minutes = int(first)
                 hours = total_minutes // 60
@@ -140,7 +121,6 @@ def normalize_album(value):
     if key in ALBUM_NORMALIZATIONS:
         return ALBUM_NORMALIZATIONS[key]
 
-    # Normalize common single formatting.
     if re.search(r"\s*-\s*single$", value, re.IGNORECASE):
         base = re.sub(
             r"\s*-\s*single$",
@@ -264,6 +244,7 @@ def extract_rows(fields):
         ]
 
         if is_talk:
+
             media_type = "talk"
             album = ""
 
@@ -274,12 +255,19 @@ def extract_rows(fields):
                 artist = "Host"
 
         else:
-    media_type = "music"
 
-    # If album is blank, Live365 requires:
-    # Song Title (Single)
-    if not album:
-        album = f"{title} (Single)"
+            media_type = "music"
+
+            # -------------------------------------------------
+            # LIVE365 SINGLE ALBUM RULE
+            #
+            # If a music track has no album information,
+            # Live365 requires the song title followed by
+            # "(Single)" in the album field.
+            # -------------------------------------------------
+
+            if not album:
+                album = f"{title} (Single)"
 
         rows.append({
             "timestamp_ms": timestamp_ms,
@@ -303,21 +291,9 @@ def extract_rows(fields):
 # ---------------------------------------------------------
 
 def add_show_title_marker(rows, show_name, corrections):
-    """
-    Every BLOCK 105 cue sheet starts with:
-
-    00:00:00.000
-    talk
-    SHOW TITLE
-    SHOW TITLE
-
-    If the first actual item is a song at 00:00:00,
-    preserve the song and move it to 00:00:00.001.
-    """
 
     show_name = clean(show_name) or "BLOCK 105 SHOW"
 
-    # Find anything currently starting at zero.
     zero_rows = [
         row for row in rows
         if row["timestamp_ms"] == 0
@@ -336,9 +312,9 @@ def add_show_title_marker(rows, show_name, corrections):
             corrections.append({
                 "type": "Correction",
                 "message": (
-                    f"First music marker moved from "
-                    f"00:00:00.000 to 00:00:00.001 "
-                    f"to preserve the show-title marker."
+                    "First music marker moved from "
+                    "00:00:00.000 to 00:00:00.001 "
+                    "to preserve the show-title marker."
                 )
             })
 
@@ -365,7 +341,7 @@ def add_show_title_marker(rows, show_name, corrections):
             })
 
         else:
-            # Existing non-music marker can become the show marker.
+
             first_zero["media_type"] = "talk"
             first_zero["title"] = show_name
             first_zero["artist"] = show_name
@@ -415,6 +391,7 @@ def add_show_title_marker(rows, show_name, corrections):
 # ---------------------------------------------------------
 
 def fix_duplicate_timestamps(rows, corrections):
+
     used = set()
 
     for row in rows:
@@ -451,14 +428,6 @@ def fix_duplicate_timestamps(rows, corrections):
 # ---------------------------------------------------------
 
 def marker_violations(rows):
-    """
-    Live365 marker limits:
-
-    5 markers / 10 minutes
-    7 markers / 15 minutes
-    13 markers / 30 minutes
-    33 markers / 78 minutes
-    """
 
     limits = [
         (10 * 60 * 1000, 5),
@@ -522,7 +491,6 @@ def remove_safe_nonmusic_markers(rows, corrections):
             if row.get("_protected"):
                 continue
 
-            # Never remove the protected show marker.
             if row["timestamp_ms"] == 0:
                 continue
 
@@ -531,7 +499,6 @@ def remove_safe_nonmusic_markers(rows, corrections):
         if not removable:
             break
 
-        # Remove the latest safe non-music marker first.
         index_to_remove = removable[-1]
 
         removed = rows.pop(index_to_remove)
@@ -558,11 +525,13 @@ def validate_rows(rows):
     warnings = []
 
     if not rows:
-        errors.append("No cue-sheet rows were found.")
+
+        errors.append(
+            "No cue-sheet rows were found."
+        )
 
         return errors, warnings
 
-    # First marker must be show marker.
     first = rows[0]
 
     if first["timestamp_ms"] != 0:
@@ -575,7 +544,6 @@ def validate_rows(rows):
             "First marker must be a talk/show-title marker."
         )
 
-    # Duplicate timestamp check.
     seen = set()
 
     for row in rows:
@@ -590,13 +558,18 @@ def validate_rows(rows):
 
         seen.add(timestamp)
 
-        # Required fields.
         if not row["offset"]:
-            errors.append("A row is missing its offset.")
-
-        if row["media_type"] not in ["music", "talk"]:
             errors.append(
-                f"Invalid media_type: {row['media_type']}."
+                "A row is missing its offset."
+            )
+
+        if row["media_type"] not in [
+            "music",
+            "talk"
+        ]:
+            errors.append(
+                f"Invalid media_type: "
+                f"{row['media_type']}."
             )
 
         if not row["title"]:
@@ -609,7 +582,6 @@ def validate_rows(rows):
                 f"Missing artist at {row['offset']}."
             )
 
-        # Music metadata warning.
         if row["media_type"] == "music":
 
             if not row["album"]:
@@ -622,7 +594,9 @@ def validate_rows(rows):
 
     for violation in density_violations:
 
-        window_minutes = violation["window_ms"] / 60000
+        window_minutes = (
+            violation["window_ms"] / 60000
+        )
 
         warnings.append(
             f"Live365 marker-density limit remains exceeded: "
@@ -700,7 +674,10 @@ def index():
 
     if request.method == "POST":
 
-        action = request.form.get("action", "analyze")
+        action = request.form.get(
+            "action",
+            "analyze"
+        )
 
         # -------------------------------------------------
         # DOWNLOAD CORRECTED CSV
@@ -708,19 +685,26 @@ def index():
 
         if action == "download":
 
-            csv_data = session.get("csv_data", "")
+            csv_data = session.get(
+                "csv_data",
+                ""
+            )
+
             filename = session.get(
                 "csv_filename",
                 "BLOCK_105_LIVE365.csv"
             )
 
             if not csv_data:
+
                 flash(
                     "Your corrected CSV is no longer available. "
                     "Please upload the cue sheet again."
                 )
 
-                return redirect(url_for("index"))
+                return redirect(
+                    url_for("index")
+                )
 
             file_data = io.BytesIO(
                 csv_data.encode("utf-8")
@@ -745,15 +729,20 @@ def index():
             not uploaded_file
             or not uploaded_file.filename.lower().endswith(".pdf")
         ):
+
             flash(
                 "Please select a completed BLOCK 105 cue sheet PDF."
             )
 
-            return redirect(url_for("index"))
+            return redirect(
+                url_for("index")
+            )
 
         try:
 
-            fields = get_pdf_fields(uploaded_file)
+            fields = get_pdf_fields(
+                uploaded_file
+            )
 
         except Exception as error:
 
@@ -761,7 +750,9 @@ def index():
                 f"Could not read this PDF: {error}"
             )
 
-            return redirect(url_for("index"))
+            return redirect(
+                url_for("index")
+            )
 
         original_rows = extract_rows(fields)
 
@@ -771,12 +762,17 @@ def index():
                 "No completed cue-sheet rows were found."
             )
 
-            return redirect(url_for("index"))
+            return redirect(
+                url_for("index")
+            )
 
         corrections = []
 
         show_name = clean(
-            fields.get("show_title", "")
+            fields.get(
+                "show_title",
+                ""
+            )
         )
 
         # -------------------------------------------------
@@ -786,6 +782,7 @@ def index():
         for row in original_rows:
 
             original_artist = row["artist"]
+
             normalized_artist = normalize_artist(
                 original_artist
             )
@@ -804,6 +801,7 @@ def index():
                 row["artist"] = normalized_artist
 
             original_album = row["album"]
+
             normalized_album = normalize_album(
                 original_album
             )
@@ -875,7 +873,6 @@ def index():
             f"{filename_base}_LIVE365_CORRECTED.csv"
         )
 
-        # Store only after analysis.
         session["csv_data"] = csv_data
         session["csv_filename"] = filename
 
@@ -888,12 +885,12 @@ def index():
         )
 
         return render_template(
-          "converter.html",
+            "index.html",
             report=report
         )
 
     return render_template(
-     "converter.html",
+        "index.html",
         report=None
     )
 
@@ -907,6 +904,9 @@ if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
         port=int(
-            os.environ.get("PORT", 8080)
+            os.environ.get(
+                "PORT",
+                8080
+            )
         )
     )
