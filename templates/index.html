@@ -1,152 +1,479 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>THE BLOCK 105 RADIO Cue Sheet Converter</title>
+    <title>THE BLOCK 105 RADIO - Cue Sheet Converter V2</title>
 
-<style>
-body {
-    margin: 0;
-    background: #111;
-    color: white;
-    font-family: Arial, Helvetica, sans-serif;
-    text-align: center;
-}
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-header {
-    background: #000;
-    padding: 25px;
-    border-bottom: 4px solid #ffd400;
-}
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #111;
+            color: white;
+        }
 
-header h1 {
-    color: #ffd400;
-    margin: 0;
-}
+        .header {
+            background: #000;
+            border-bottom: 4px solid #f4c400;
+            padding: 25px 20px;
+            text-align: center;
+        }
 
-.container {
-    max-width: 650px;
-    margin: 50px auto;
-    padding: 20px;
-}
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+            color: #f4c400;
+        }
 
-.box {
-    background: #222;
-    border: 2px solid #ffd400;
-    border-radius: 10px;
-    padding: 35px;
-}
+        .header p {
+            margin: 8px 0 0;
+            color: white;
+            font-size: 16px;
+        }
 
-h2 {
-    color: #ffd400;
-}
+        .container {
+            max-width: 850px;
+            margin: 40px auto;
+            padding: 20px;
+        }
 
-input[type=file] {
-    width: 90%;
-    padding: 15px;
-    margin: 25px 0;
-    background: white;
-    color: black;
-}
+        .card {
+            background: #222;
+            border: 2px solid #f4c400;
+            border-radius: 12px;
+            padding: 35px;
+        }
 
-button {
-    background: #ffd400;
-    color: black;
-    border: none;
-    padding: 16px 30px;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 5px;
-}
+        h2 {
+            color: #f4c400;
+            margin-top: 0;
+        }
 
-.message {
-    background: #5b2222;
-    padding: 12px;
-    margin-bottom: 20px;
-}
-</style>
+        p {
+            line-height: 1.6;
+        }
+
+        .upload-box {
+            margin-top: 25px;
+            padding: 25px;
+            background: #181818;
+            border: 1px solid #555;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            margin: 15px 0 25px;
+            padding: 15px;
+            background: white;
+            color: black;
+            border-radius: 6px;
+            border: none;
+        }
+
+        button {
+            background: #f4c400;
+            color: black;
+            border: none;
+            padding: 15px 30px;
+            font-size: 17px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #ffd92f;
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: wait;
+        }
+
+        .message {
+            background: #5a1f1f;
+            border: 1px solid #ff7777;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+        }
+
+        .success {
+            background: #173d1f;
+            border: 1px solid #5ac46b;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .error {
+            background: #5a1f1f;
+            border: 1px solid #ff7777;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .report-section {
+            background: #181818;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .report-section h3 {
+            margin-top: 0;
+            color: #f4c400;
+        }
+
+        .report-section ul {
+            padding-left: 25px;
+        }
+
+        .report-section li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .stat {
+            flex: 1;
+            min-width: 180px;
+            background: #111;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .stat-number {
+            display: block;
+            font-size: 28px;
+            font-weight: bold;
+            color: #f4c400;
+        }
+
+        .stat-label {
+            display: block;
+            margin-top: 6px;
+            color: #bbb;
+            font-size: 14px;
+        }
+
+        .footer {
+            text-align: center;
+            color: #aaa;
+            margin-top: 30px;
+            font-size: 13px;
+        }
+
+        .small-note {
+            color: #aaa;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+
+        .download-button {
+            display: inline-block;
+            background: #f4c400;
+            color: black;
+            text-decoration: none;
+            padding: 15px 30px;
+            font-size: 17px;
+            font-weight: bold;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+    </style>
 </head>
 
 <body>
 
-<header>
+<div class="header">
     <h1>THE BLOCK 105 RADIO</h1>
-    <p>CUE SHEET → LIVE365 CSV CONVERTER</p>
-</header>
+    <p>Cue Sheet → Analyze → Correct → Validate → Live365 CSV</p>
+</div>
 
 <div class="container">
 
-<div class="box">
+{% if not report %}
 
-<h2>Upload Your Completed Cue Sheet</h2>
+    <div class="card">
 
-<p>
-Upload your completed BLOCK 105 RADIO Cue Sheet PDF and convert it into a CSV file for Live365.
-</p>
+        <h2>Upload Your Completed Cue Sheet</h2>
 
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-{% for message in messages %}
-<div class="message">{{ message }}</div>
-{% endfor %}
+        <p>
+            Upload your completed BLOCK 105 RADIO Cue Sheet PDF.
+            The converter will analyze the cue sheet, correct
+            formatting issues, validate the markers, and prepare
+            a Live365-compatible CSV.
+        </p>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="upload-box">
+
+            <form
+                id="cueSheetForm"
+                method="POST"
+                action="/"
+                enctype="multipart/form-data"
+            >
+
+                <input
+                    id="pdfFile"
+                    type="file"
+                    name="pdf"
+                    accept=".pdf,application/pdf"
+                    required
+                >
+
+                <input
+                    type="hidden"
+                    name="action"
+                    value="analyze"
+                >
+
+                <button
+                    id="analyzeButton"
+                    type="submit"
+                >
+                    ANALYZE CUE SHEET
+                </button>
+
+            </form>
+
+            <div class="small-note">
+                PDF files only
+            </div>
+
+        </div>
+
+    </div>
+
+{% else %}
+
+    <div class="card">
+
+        <h2>Analysis Complete</h2>
+
+        {% if report.errors|length == 0 %}
+
+            <div class="success">
+                The cue sheet was processed successfully.
+            </div>
+
+        {% else %}
+
+            <div class="error">
+                <strong>Validation errors were found.</strong>
+                Review the errors below before using the CSV.
+            </div>
+
+        {% endif %}
+
+        <div class="stats">
+
+            <div class="stat">
+                <span class="stat-number">
+                    {{ report.original_count }}
+                </span>
+                <span class="stat-label">
+                    Source Markers
+                </span>
+            </div>
+
+            <div class="stat">
+                <span class="stat-number">
+                    {{ report.corrected_count }}
+                </span>
+                <span class="stat-label">
+                    Final Markers
+                </span>
+            </div>
+
+            <div class="stat">
+                <span class="stat-number">
+                    {{ report.corrections|length }}
+                </span>
+                <span class="stat-label">
+                    Corrections
+                </span>
+            </div>
+
+            <div class="stat">
+                <span class="stat-number">
+                    {{ report.warnings|length }}
+                </span>
+                <span class="stat-label">
+                    Warnings
+                </span>
+            </div>
+
+        </div>
+
+        {% if report.corrections %}
+
+        <div class="report-section">
+
+            <h3>Corrections Made</h3>
+
+            <ul>
+
+                {% for item in report.corrections %}
+
+                <li>
+                    {{ item.message }}
+                </li>
+
+                {% endfor %}
+
+            </ul>
+
+        </div>
+
+        {% endif %}
+
+        {% if report.warnings %}
+
+        <div class="report-section">
+
+            <h3>Warnings</h3>
+
+            <ul>
+
+                {% for warning in report.warnings %}
+
+                <li>
+                    {{ warning }}
+                </li>
+
+                {% endfor %}
+
+            </ul>
+
+        </div>
+
+        {% endif %}
+
+        {% if report.errors %}
+
+        <div class="report-section">
+
+            <h3>Validation Errors</h3>
+
+            <ul>
+
+                {% for error in report.errors %}
+
+                <li>
+                    {{ error }}
+                </li>
+
+                {% endfor %}
+
+            </ul>
+
+        </div>
+
+        {% endif %}
+
+        <div class="report-section">
+
+            <h3>Live365 CSV</h3>
+
+            {% if report.errors|length == 0 %}
+
+                <p>
+                    Your corrected CSV is ready.
+                    Click below to download it.
+                </p>
+
+                <form method="POST" action="/">
+
+                    <input
+                        type="hidden"
+                        name="action"
+                        value="download"
+                    >
+
+                    <button type="submit">
+                        DOWNLOAD CORRECTED CSV
+                    </button>
+
+                </form>
+
+            {% else %}
+
+                <p>
+                    The CSV was generated, but validation errors
+                    need to be reviewed before using it.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+        <div style="text-align:center; margin-top:25px;">
+
+            <a
+                href="/"
+                style="color:#f4c400;"
+            >
+                ← START OVER
+            </a>
+
+        </div>
+
+    </div>
+
 {% endif %}
-{% endwith %}
 
-<form method="POST" enctype="multipart/form-data">
-
-<input type="file" name="pdf" accept=".pdf" required>
-
-<br><br>
-
-<button type="submit">
-CONVERT TO LIVE365 CSV
-</button>
-
-</form>
-{% if report %}
-<hr style="margin: 30px 0; border-color: #ffd400;">
-
-<h2>CONVERSION COMPLETE</h2>
-
-<p>
-Original rows: {{ report.original_count }}<br>
-Corrected rows: {{ report.corrected_count }}
-</p>
-
-{% if report.errors %}
-<h3>Errors</h3>
-{% for error in report.errors %}
-<p>{{ error }}</p>
-{% endfor %}
-{% endif %}
-
-{% if report.warnings %}
-<h3>Warnings</h3>
-{% for warning in report.warnings %}
-<p>{{ warning }}</p>
-{% endfor %}
-{% endif %}
-
-{% if report.corrections %}
-<h3>Corrections Made</h3>
-{% for correction in report.corrections %}
-<p>{{ correction.message }}</p>
-{% endfor %}
-{% endif %}
-
-<form method="POST">
-    <input type="hidden" name="action" value="download">
-    <button type="submit">
-        DOWNLOAD LIVE365 CSV
-    </button>
-</form>
-{% endif %}
+<div class="footer">
+    THE BLOCK 105 RADIO • Broadcast Compliance Tools
 </div>
 
 </div>
+
+<script>
+document.getElementById("cueSheetForm")?.addEventListener("submit", function(event) {
+
+    const fileInput = document.getElementById("pdfFile");
+    const button = document.getElementById("analyzeButton");
+
+    if (!fileInput.files || fileInput.files.length === 0) {
+        event.preventDefault();
+        alert("Please select a completed cue sheet PDF first.");
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "ANALYZING CUE SHEET...";
+});
+</script>
 
 </body>
 </html>
