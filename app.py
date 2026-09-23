@@ -274,7 +274,12 @@ def extract_rows(fields):
                 artist = "Host"
 
         else:
-            media_type = "music"
+    media_type = "music"
+
+    # If album is blank, Live365 requires:
+    # Song Title (Single)
+    if not album:
+        album = f"{title} (Single)"
 
         rows.append({
             "timestamp_ms": timestamp_ms,
